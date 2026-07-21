@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Everpure Agent Context: Strategy Deck</title>
+<style>
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-Medium.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-SemiBold.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+
+  :root {
+    --ep-orange: #FE5000;
+    --ep-ink: #2D2A27;
+    --ep-cream: #FFF5E3;
+    --ep-clay: #E9CCBE;
+    --ep-terracotta: #BD673D;
+    --ep-gray: #777777;
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--ep-ink);
+    font-family: 'Pure Sans', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--ep-ink);
+  }
+
+  .deck {
+    height: 100vh;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+  }
+
+  .slide {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    scroll-snap-align: start;
+    background: var(--ep-cream);
+    display: flex;
+    flex-direction: column;
+    padding: 6vh 7vw 8vh;
+    overflow: hidden;
+  }
+
+  /* chrome */
+  .chrome {
+    position: absolute; left: 7vw; right: 7vw; top: 3.2vh;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .chrome img { height: 24px; }
+  .chrome .pageno { font-size: 13px; color: var(--ep-gray); letter-spacing: .08em; }
+
+  .foot {
+    position: absolute; left: 7vw; right: 7vw; bottom: 3vh;
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: var(--ep-gray);
+  }
+
+  .kicker {
+    color: var(--ep-orange); font-weight: 600; font-size: clamp(13px, 1.7vh, 17px);
+    letter-spacing: .16em; text-transform: uppercase; margin: 4.2vh 0 1.4vh;
+  }
+  h1.assert {
+    font-size: clamp(26px, 5.2vh, 48px); line-height: 1.18; font-weight: 600;
+    letter-spacing: -0.01em; max-width: 96%;
+    margin-bottom: 2.6vh;
+  }
+  h1.assert .hl { color: var(--ep-orange); }
+
+  .body { flex: 1; display: flex; gap: 3vw; min-height: 0; }
+  .col { flex: 1; min-width: 0; }
+
+  p.lead { font-size: clamp(17px, 2.7vh, 23px); line-height: 1.5; margin-bottom: 2vh; }
+  ul.pts { list-style: none; padding: 0; }
+  ul.pts li {
+    font-size: clamp(16px, 2.5vh, 22px); line-height: 1.45;
+    padding: 0 0 1.6vh 24px; position: relative;
+  }
+  ul.pts li::before {
+    content: ''; position: absolute; left: 0; top: .55em;
+    width: 9px; height: 9px; background: var(--ep-orange); border-radius: 2px;
+  }
+  ul.pts li strong { font-weight: 600; }
+
+  .card {
+    background: rgba(255,255,255,.6); border: 1px solid var(--ep-clay);
+    border-radius: 10px; padding: 2.2vh 1.4vw;
+  }
+
+  /* stat cards */
+  .stats { display: flex; flex-direction: column; gap: 1.8vh; justify-content: center; height: 100%; }
+  .stat { display: flex; align-items: baseline; gap: 1vw; }
+  .stat .num { font-size: clamp(34px, 6.5vh, 62px); font-weight: 700; color: var(--ep-orange); min-width: 4.2ch; text-align: right; }
+  .stat .cap { font-size: clamp(15px, 2.2vh, 19px); line-height: 1.4; color: var(--ep-ink); }
+  .stat .cap .src { color: var(--ep-gray); font-size: .85em; }
+
+  /* flow diagram */
+  .flow { display: flex; align-items: stretch; gap: 0; margin: 1vh 0 2.4vh; }
+  .flow .node {
+    flex: 1; border: 1.5px solid var(--ep-ink); border-radius: 10px;
+    padding: 1.6vh 1vw; background: rgba(255,255,255,.6);
+    font-size: clamp(14px, 2.1vh, 18px); line-height: 1.35;
+  }
+  .flow .node .t { font-weight: 600; display: block; margin-bottom: .5vh; }
+  .flow .node.accent { border-color: var(--ep-orange); background: rgba(254,80,0,.07); }
+  .flow .arrow {
+    align-self: center; padding: 0 .8vw; color: var(--ep-orange);
+    font-size: clamp(18px, 3vh, 26px); font-weight: 700;
+  }
+
+  .prize {
+    background: var(--ep-ink); color: var(--ep-cream); border-radius: 10px;
+    padding: 1.8vh 1.6vw; display: flex; align-items: center; gap: 1.6vw;
+  }
+  .prize .label { color: var(--ep-orange); font-size: 12.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+  .prize .math { font-size: clamp(15px, 2.4vh, 20px); font-weight: 500; }
+  .prize .math b { color: var(--ep-orange); font-weight: 700; }
+
+  /* compact table */
+  table { border-collapse: collapse; width: 100%; font-size: clamp(13.5px, 2vh, 17.5px); background: rgba(255,255,255,.6); }
+  th { background: var(--ep-ink); color: var(--ep-cream); font-weight: 600; text-align: left; padding: 1.1vh
+ .8vw; font-size: .92em; }
+  td { border: 1px solid var(--ep-clay); padding: 1vh .8vw; vertical-align: top; line-height: 1.3; }
+  td.cap { font-weight: 600; }
+  th.ep { background: var(--ep-orange); color: #fff; }
+  td.ep { background: rgba(254,80,0,.08); font-weight: 600; border-left: 3px solid var(--ep-orange); }
+
+  /* timeline */
+  .timeline { display: flex; gap: 1.2vw; margin-bottom: 2.4vh; }
+  .phase {
+    flex: 1; border: 1px solid var(--ep-clay); border-top: 5px solid var(--ep-orange);
+    border-radius: 8px; background: rgba(255,255,255,.6); padding: 1.5vh 1vw;
+  }
+  .phase .ph { font-weight: 600; font-size: clamp(15px, 2.3vh, 19px); }
+  .phase .mo { color: var(--ep-gray); font-size: .82em; margin-bottom: .8vh; }
+  .phase .gate { font-size: clamp(13.5px, 2vh, 17px); line-height: 1.35; }
+  .phase .gate b { color: var(--ep-terracotta); font-size: .82em; letter-spacing: .1em; text-transform: uppercase; }
+
+  .map { display: flex; flex-direction: column; gap: 1.2vh; }
+  .maprow { display: flex; align-items: center; gap: 1vw; }
+  .maprow .a { flex: 1.15; } .maprow .b { flex: 1; }
+  .maprow .a, .maprow .b {
+    border-radius: 8px; padding: 1.2vh 1vw; font-size: clamp(14px, 2.1vh, 18px); line-height: 1.3;
+  }
+  .maprow .a { background: rgba(255,255,255,.6); border: 1px solid var(--ep-clay); font-weight: 500; }
+  .maprow .b { background: rgba(254,80,0,.08); border: 1px solid var(--ep-orange); }
+  .maprow .ar { color: var(--ep-orange); font-weight: 700; font-size: clamp(15px, 2.4vh, 20px); }
+
+  .northstar {
+    background: var(--ep-ink); color: var(--ep-cream); border-radius: 10px;
+    padding: 1.8vh 1.4vw; margin-bottom: 2vh;
+  }
+  .northstar .label { color: var(--ep-orange); font-size: 12.5px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; display: block; margin-bottom: .5vh; }
+  .northstar p { font-size: clamp(15.5px, 2.4vh, 20px); font-weight: 500; }
+
+  .kill { border-left: 4px solid var(--ep-orange); padding: .4vh 0 .4vh 1.2vw; margin-bottom: 2vh; }
+  .kill p { font-size: clamp(15px, 2.3vh, 19px); line-height: 1.45; }
+
+  h3.sub { font-size: clamp(13.5px, 2vh, 16px); letter-spacing: .12em; text-transform: uppercase; color: var(--ep-terracotta); margin-bottom: 1.2vh; font-weight: 600; }
+
+  /* cover */
+  .cover { justify-content: center; }
+  .cover .chrome { top: 4.5vh; }
+  .cover .eyebrow { color: var(--ep-orange); font-weight: 600; letter-spacing: .18em; text-transform: uppercase; font-size: clamp(14px, 1.9vh, 17px); margin-bottom: 2.4vh; }
+  .cover h1.title { font-size: clamp(38px, 8.2vh, 72px); font-weight: 600; line-height: 1.1; letter-spacing: -0.015em; max-width: 84%; margin-bottom: 3vh; }
+  .cover .rule { width: 72px; height: 5px; background: var(--ep-orange); border: 0; margin-bottom: 3vh; }
+  .cover .sub { font-size: clamp(17px, 2.8vh, 24px); color: var(--ep-ink); max-width: 68%; line-height: 1.5; margin-bottom: 4vh; }
+  .cover .date { color: var(--ep-gray); font-size: clamp(15px, 2.1vh, 18px); }
+
+  .example {
+    background: rgba(255,255,255,.6); border: 1px solid var(--ep-clay); border-left: 4px solid var(--ep-orange);
+    border-radius: 0 10px 10px 0; padding: 1.8vh 1.4vw; margin-top: 1vh;
+    font-size: clamp(15px, 2.3vh, 19px); line-height: 1.5;
+  }
+  .example .t { font-weight: 600; display: block; margin-bottom: .6vh; }
+
+  @media print {
+    body { background: #fff; }
+    .deck { height: auto; overflow: visible; }
+    .slide { width: 100%; height: 100vh; page-break-after: always; break-after: page; }
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- 0. COVER -->
+<section class="slide cover">
+  <div class="chrome">
+    <img src="https://s21.q4cdn.com/687136699/files/design/purestorage_logo_new.svg" alt="Everpure">
+    <span class="pageno">Strategy / Enterprise AI &amp; Analytics</span>
+  </div>
+  <p class="eyebrow">Strategy Case</p>
+  <h1 class="title">Enterprise Context for AI Agent Decisions</h1>
+  <hr class="rule">
+  <p class="sub">Operationalize Everpure Data Intelligence at the moment of action: a low-latency context, recommendation, and evidence service for the platforms that govern AI agents.</p>
+  <p class="date">July 2026</p>
+</section>
+
+<!-- 1. THE SHIFT -->
+<section class="slide">
+  <div class="chrome">
+    <img src="https://s21.q4cdn.com/687136699/files/design/purestorage_logo_new.svg" alt="Everpure">
+    <span class="pageno">1 / 7</span>
+  </div>
+  <p class="kicker">The shift</p>
+  <h1 class="assert">Agents are moving from answering to acting, and <span class="hl">trust in actions</span> is now the bottleneck.</h1>
+  <div class="body">
+    <div class="col">
+      <p class="lead">As enterprise AI moves from supervised copilots to autonomous execution, model capability alone becomes a less durable source of differentiation.</p>
+      <ul class="pts">
+        <li>The critical control point shifts to the <strong>context governing each action</strong>: who is acting, what authority they have over the data involved, and what the risk of the proposed action is.</li>
+        <li>The buying question is no longer "is the model smart enough." It is <strong>"can I let it touch my data."</strong></li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="stats">
+        <div class="stat"><span class="num">2/3</span><span class="cap">of enterprises cite security and risk as the primary barrier to fully scaling agentic AI <span class="src">(McKinsey, 2026 AI Trust survey)</span></span></div>
+        <div class="stat"><span class="num">40%</span><span class="cap">of IT leaders delayed Microsoft 365 Copilot by three months or more over data-oversharing concerns <span class="src">(Gartner, via Computerworld)</span></span></div>
+        <div class="stat"><span class="num">97%</span><span class="cap">of organizations breached through AI models or applications lacked proper AI access controls <span class="src">(IBM, Cost of a Data Breach 2025)</span></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Everpure Agent Context</span><span>July 2026</span></div>
+</section>
+
+<!-- 2. THE GAP -->
+<section class="slide">
+  <div class="chrome">
+    <img src="https://s21.q4cdn.com/687136699/files/design/purestorage_logo_new.svg" alt="Everpure">
+    <span class="pageno">2 / 7</span>
+  </div>
+  <p class="kicker">The gap</p>
+  <h1 class="assert">Every high-risk agent action needs an answer nobody serves today: <span class="hl">what data does this touch, and what happens if it is wrong?</span></h1>
+  <div class="body">
+    <div class="col">
+      <ul class="pts">
+        <li><strong>Identity platforms</strong> know who or what is acting, and under whose authority.</li>
+        <li><strong>Policy engines</strong> know the rules the customer wrote.</li>
+        <li><strong>Nobody serves data context at decision time:</strong> sensitivity, ownership, lineage, business criticality, and recoverability.</li>
+        <li>That context exists, but it is fragmented across catalogs, security tools, and storage, and it is not delivered in a form authorization systems can consume.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <div class="example">
+        <span class="t">Why identity and rules are not enough</span>
+        An agent asks to delete a dataset. Its role allows it. What the role cannot see: the dataset feeds a critical business process, contains regulated data, and has no recent recovery point. Allowed by policy, catastrophic in context.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Everpure Agent Context</span><span>July 2026</span></div>
+</section>
+
+<!-- 3. THE BET + PRIZE -->
+<section class="slide">
+  <div class="chrome">
+    <img src="https://s21.q4cdn.com/687136699/files/design/purestorage_logo_new.svg" alt="Everpure">
+    <span class="pageno">3 / 7</span>
+  </div>
+  <p class="kicker">The bet</p>
+  <h1 class="assert"><span class="hl">Everpure Agent Context:</span> operationalize Data Intelligence at the moment of action.</h1>
+  <div class="body" style="flex-direction: column;">
+    <div class="flow">
+      <div class="node"><span class="t">Everpure Data Intelligence</span>Enterprise context graph: classification, ownership, lineage, criticality, recovery state</div>
+      <div class="arrow">&#8594;</div>
+      <div class="node accent"><span class="t">Everpure Agent Context</span>Low-latency policy-ready context, explainable recommendations, verifiable decision records</div>
+      <div class="arrow">&#8594;</div>
+      <div class="node"><span class="t">Enforcement platforms</span>Identity, authorization, and runtime platforms keep final policy and enforcement authority</div>
+    </div>
+    <div style="display:flex; gap:3vw; flex:1; min-height:0;">
+      <div class="col">
+        <ul class="pts">
+          <li><strong>First use case:</strong> high-blast-radius actions on Everpure-managed data. <strong>Then:</strong> sensitive-data movement.</li>
+          <li><strong>Deliberately not:</strong> an identity provider, an agent gateway or runtime, or a general-purpose AI-security platform.</li>
+        </ul>
+      </div>
+      <div class="col" style="display:flex; align-items:flex-end;">
+        <div class="prize" style="width:100%;">
+          <span class="label">The prize</span>
+          <span class="math">$6.1B market by 2029 &times; 20 to 30% relevant share &times; 5 to 8% capture = <b>$60M to $145M</b> annual revenue. Shares are assumptions, validated through design partners.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Everpure Agent Context</span><span>July 2026</span></div>
+</section>
+
+<!-- 4. RIGHT TO WIN -->
+<section class="slide">
+  <div class="chrome">
+    <img src="https://s21.q4cdn.com/687136699/files/design/purestorage_logo_new.svg" alt="Everpure">
+    <span class="pageno">4 / 7</span>
+  </div>
+  <p class="kicker">Right to win</p>
+  <h1 class="assert">Everpure can assemble <span class="hl">context others cannot</span>, from a position others cannot take.</h1>
+  <div class="body" style="flex-direction: column;">
+    <ul class="pts" style="margin-bottom:1.5vh;">
+      <li><strong>Cross-estate reach, including mainframe:</strong> the 1touch.io engine delivers &gt;98% Tolly-verified classification accuracy and was strong enough that IBM OEM'd it as Guardium Discover and Classify.</li>
+      <li><strong>Storage-level state and recovery intelligence</strong> that no application-layer platform sees: replication posture, recovery-point freshness, expected recoverability.</li>
+      <li><strong>Neutrality</strong> across runtimes and data platforms that Microsoft, Cyera, and Rubrik are structurally unable to offer.</li>
+    </ul>
+    <table>
+      <thead><tr><th>Capability</th><th>Microsoft Entra + Purview</th><th>Cyera</th><th>Rubrik Agent Rewind</th><th class="ep">Everpure proposed position</th></tr></thead>
+      <tbody>
+        <tr><td class="cap">Pre-action runtime recommendations</td><td>Strong within Microsoft</td><td>Emerging</td><td>Limited</td><td class="ep">Core product</td></tr>
+        <tr><td class="cap">Storage-level state and recoverability</td><td>Limited</td><td>Limited</td><td>Strong</td><td class="ep">Core advantage</td></tr>
+        <tr><td class="cap">Neutrality across runtimes and platforms</td><td>Limited</td><td>Strong</td><td>Medium</td><td class="ep">Core position</td></tr>
+        <tr><td class="cap">Final enforcement authority</td><td>Owned</td><td>Integration-dependent</td><td>Integration-dependent</td><td class="ep">Deliberately partner-owned</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="foot"><span>Everpure Agent Context</span><span>July 2026</span></div>
+</section>
+
+<!-- 5. GTM -->
+<section class="slide">
+  <div class="chrome">
+    <img src="https://s21.q4cdn.com/687136699/files/design/purestorage_logo_new.svg" alt="Everpure">
+    <span class="pageno">5 / 7</span>
+  </div>
+  <p class="kicker">Go to market</p>
+  <h1 class="assert">Sell through the installed base, but price and fund it as <span class="hl">its own business.</span></h1>
+  <div class="body">
+    <div class="col">
+      <ul class="pts">
+        <li><strong>Start with 2 to 3 paid design partners,</strong> each integrating one high-risk workflow with an agent runtime, MCP gateway, or authorization platform.</li>
+        <li><strong>The 14,500-customer base opens doors.</strong> Specialist AI and data-security sellers own discovery and the technical sale; storage account executives get quota credit.</li>
+        <li><strong>Price on the scope of risk governed,</strong> not storage capacity: platform fee plus tiers on protected workflows or governed data domains.</li>
+      </ul>
+    </div>
+    <div class="col" style="display:flex; align-items:center;">
+      <div class="card" style="width:100%;">
+        <h3 class="sub">The standalone test</h3>
+        <p class="lead" style="margin-bottom:0;">Independent security, AI-platform, or cyber-resilience budget is the test of whether this is a standalone business. If it only sells through storage budgets, it is a feature, not a business.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>Everpure Agent Context</span><span>July 2026</span></div>
+</section>
+
+<!-- 6. ONE-YEAR PLAN -->
+<section class="slide">
+  <div class="chrome">
+    <img src="https://s21.q4cdn.com/687136699/files/design/purestorage_logo_new.svg" alt="Everpure">
+    <span class="pageno">6 / 7</span>
+  </div>
+  <p class="kicker">One-year plan</p>
+  <h1 class="assert">Year one is staged behind evidence gates, and the first three engineering priorities <span class="hl">test the three assumptions that matter.</span></h1>
+  <div class="body" style="flex-direction: column;">
+    <div class="timeline">
+      <div class="phase"><div class="ph">Phase 1: Validate</div><div class="mo">Months 0 to 3</div><div class="gate"><b>Gate</b> Two design partners, one platform partner, five adjudicated workflows, evidence of decision impact.</div></div>
+      <div class="phase"><div class="ph">Phase 2: Paid pilot</div><div class="mo">Months 4 to 6</div><div class="gate"><b>Gate</b> One paid pilot, 90% context coverage, decision-quality targets, acceptable latency.</div></div>
+      <div class="phase"><div class="ph">Phase 3: Production</div><div class="mo">Months 7 to 12</div><div class="gate"><b>Gate</b> Three paying customers, two production integrations, independent budget.</div></div>
+    </div>
+    <div class="map">
+      <div class="maprow"><div class="a">1. Action-to-data resolution</div><div class="ar">&#8594;</div><div class="b">Can Everpure map an intercepted action to differentiated context?</div></div>
+      <div class="maprow"><div class="a">2. One shadow-mode enforcement integration</div><div class="ar">&#8594;</div><div class="b">Will a real platform consume that context?</div></div>
+      <div class="maprow"><div class="a">3. Evidence and measurement plane</div><div class="ar">&#8594;</div><div class="b">Does context-enriched policy beat the baseline?</div></div>
+    </div>
+  </div>
+  <div class="foot"><span>Everpure Agent Context</span><span>July 2026</span></div>
+</section>
+
+<!-- 7. FALSIFICATION + CLOSE -->
+<section class="slide">
+  <div class="chrome">
+    <img src="https://s21.q4cdn.com/687136699/files/design/purestorage_logo_new.svg" alt="Everpure">
+    <span class="pageno">7 / 7</span>
+  </div>
+  <p class="kicker">Metrics, falsification, and risk</p>
+  <h1 class="assert">We will know <span class="hl">within two quarters</span> if we are wrong, and we know what we will do about it.</h1>
+  <div class="body">
+    <div class="col">
+      <div class="northstar">
+        <span class="label">North-star metric</span>
+        <p>Monthly production high-risk agent actions governed using a unique Everpure context signal.</p>
+      </div>
+      <ul class="pts">
+        <li>30% reduction in severity-weighted false allows</li>
+        <li>90% context coverage; under 5% stale context cases</li>
+      </ul>
+      <div class="kill">
+        <p><strong>Kill test:</strong> no paid pilot, fewer than two platforms consuming attributes beyond basic classifications, or no material decision lift. Then narrow to context feeds, governance evidence, and storage-native controls.</p>
+      </div>
+    </div>
+    <div class="col">
+      <h3 class="sub">Risks, each with a fallback</h3>
+      <ul class="pts">
+        <li><strong>Platforms will not consume external context:</strong> shadow mode first, open schemas; fall back to precomputed context feeds.</li>
+        <li><strong>Context is incomplete or substitutable:</strong> measure coverage and lift before committing; fall back to storage-native controls.</li>
+        <li><strong>GTM complexity:</strong> specialist sellers, one package, local projections; fall back to an Enterprise Data Cloud feature.</li>
+      </ul>
+      <p class="lead" style="margin-top:1vh;"><strong>Staged, evidence-gated, neutral:</strong> a bet Everpure can make without betting the company.</p>
+    </div>
+  </div>
+  <div class="foot"><span>Everpure Agent Context</span><span>July 2026</span></div>
+</section>
+
+</div>
+<script>
+  const deck = document.getElementById('deck');
+  const slides = Array.from(deck.querySelectorAll('.slide'));
+  document.addEventListener('keydown', (e) => {
+    const i = Math.round(deck.scrollTop / window.innerHeight);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+      e.preventDefault(); slides[Math.min(i + 1, slides.length - 1)].scrollIntoView({behavior: 'smooth'});
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+      e.preventDefault(); slides[Math.max(i - 1, 0)].scrollIntoView({behavior: 'smooth'});
+    }
+  });
+</script>
+</body>
+</html>

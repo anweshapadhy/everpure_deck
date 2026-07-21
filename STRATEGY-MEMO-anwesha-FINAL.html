@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strategy Memo: Enterprise Context for AI Agent Decisions — Everpure</title>
+<style>
+  /* Pure Sans — hotlinked from Everpure's investor-site CDN */
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-Italic.woff2') format('woff2'); font-weight: 400; font-style: italic; font-display: swap; }
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-Medium.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-SemiBold.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Pure Sans'; src: url('https://s21.q4cdn.com/687136699/files/design/fonts/PureSans-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+
+  :root {
+    --ep-orange: #FE5000;      /* Everpure primary accent */
+    --ep-ink: #2D2A27;         /* body text / brand 1 */
+    --ep-cream: #FFF5E3;       /* site background */
+    --ep-clay: #E9CCBE;        /* light borders */
+    --ep-terracotta: #BD673D;  /* secondary accent */
+    --ep-gray: #777777;        /* muted text */
+    --ep-sage: #5A6359;        /* brand 5 */
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--ep-cream);
+    color: var(--ep-ink);
+    font-family: 'Pure Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- Site header ---- */
+  .site-header {
+    background: var(--ep-cream);
+    border-bottom: 1px solid var(--ep-clay);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .site-header .inner {
+    max-width: 1080px; margin: 0 auto; padding: 18px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .site-header img.logo { height: 30px; display: block; }
+  .site-header .crumb {
+    font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ep-gray); font-weight: 500;
+  }
+
+  /* ---- Hero ---- */
+  .hero { max-width: 800px; margin: 0 auto; padding: 56px 24px 8px; }
+  .eyebrow {
+    color: var(--ep-orange); font-weight: 600; font-size: 13px;
+    letter-spacing: .14em; text-transform: uppercase; margin: 0 0 14px;
+  }
+  h1 {
+    font-size: 40px; line-height: 1.15; font-weight: 600;
+    margin: 0 0 18px; color: var(--ep-ink); letter-spacing: -0.01em;
+  }
+  .meta { color: var(--ep-gray); font-size: 15px; margin-bottom: 22px; }
+  .rule { width: 64px; height: 4px; background: var(--ep-orange); border: 0; margin: 0 0 8px; }
+
+  /* ---- Article body ---- */
+  article { max-width: 800px; margin: 0 auto; padding: 24px 24px 48px; }
+  h2 {
+    font-size: 27px; font-weight: 600; letter-spacing: -0.005em;
+    margin: 52px 0 16px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--ep-clay);
+  }
+  h2:first-of-type { margin-top: 24px; }
+  h3 { font-size: 20px; font-weight: 600; margin: 32px 0 10px; }
+  p { margin: 0 0 16px; }
+  strong { font-weight: 600; }
+  a { color: var(--ep-orange); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  ul, ol { margin: 0 0 18px; padding-left: 26px; }
+  li { margin-bottom: 7px; }
+  li::marker { color: var(--ep-orange); font-weight: 600; }
+
+  sup.cite { font-size: 11px; color: var(--ep-terracotta); font-weight: 600; }
+
+  /* Customer job pull-quote */
+  blockquote {
+    margin: 24px 0; padding: 16px 22px;
+    border-left: 4px solid var(--ep-orange);
+    background: rgba(255,255,255,.55);
+    border-radius: 0 8px 8px 0;
+    font-size: 18px; font-style: italic; color: var(--ep-ink);
+  }
+  blockquote .q-label {
+    display: block; font-style: normal; font-size: 12px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--ep-terracotta);
+    margin-bottom: 6px;
+  }
+
+  /* Math block */
+  .math {
+    background: rgba(255,255,255,.55); border: 1px solid var(--ep-clay);
+    border-radius: 8px; padding: 14px 20px; margin: 0 0 18px;
+    font-size: 15.5px;
+  }
+  .math div { padding: 3px 0; }
+  .math .op { color: var(--ep-terracotta); font-weight: 600; }
+
+  /* Phase cards (one-year plan) */
+  .stage {
+    background: rgba(255,255,255,.55); border: 1px solid var(--ep-clay);
+    border-radius: 10px; padding: 20px 24px; margin: 0 0 16px;
+  }
+  .stage h3 { margin: 0 0 10px; font-size: 18px; }
+  .stage h3 .months { color: var(--ep-gray); font-weight: 400; font-size: 15px; }
+  .stage p { margin-bottom: 10px; }
+  .stage p:last-child { margin-bottom: 0; }
+
+  /* North-star callout */
+  .northstar {
+    background: var(--ep-ink); color: var(--ep-cream);
+    border-radius: 10px; padding: 18px 24px; margin: 0 0 20px;
+  }
+  .northstar .label {
+    display: block; color: var(--ep-orange); font-size: 12px; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .northstar p { margin: 0; font-size: 18px; font-weight: 500; }
+
+  /* Risk blocks */
+  .risk { margin: 0 0 22px; padding-left: 18px; border-left: 3px solid var(--ep-clay); }
+  .risk h3 { margin: 0 0 8px; font-size: 17.5px; }
+  .risk h3 .n { color: var(--ep-orange); margin-right: 6px; }
+  .risk p { margin-bottom: 6px; font-size: 16px; }
+
+  /* Sources */
+  .sources { margin-top: 10px; font-size: 14px; color: var(--ep-gray); line-height: 1.55; }
+  .sources p { margin: 0 0 5px; }
+  .sources .n { color: var(--ep-terracotta); font-weight: 600; margin-right: 4px; }
+
+  /* Exhibit matrix table */
+  .table-wrap { overflow-x: auto; margin: 20px 0 8px; }
+  table {
+    border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.45;
+    background: rgba(255,255,255,.55);
+  }
+  th {
+    background: var(--ep-ink); color: var(--ep-cream); text-align: left;
+    font-weight: 600; padding: 11px 13px; font-size: 13px;
+    letter-spacing: .03em; vertical-align: bottom;
+  }
+  td { border: 1px solid var(--ep-clay); padding: 10px 13px; vertical-align: top; }
+  td.cap { font-weight: 600; }
+  th.ep, td.ep { border-left: 3px solid var(--ep-orange); }
+  td.ep { background: rgba(254,80,0,.07); font-weight: 500; }
+  th.ep { background: var(--ep-orange); color: #fff; }
+
+  /* Footer */
+  .disclaimer-banner {
+    background: var(--ep-clay); color: var(--ep-ink);
+    text-align: center; font-size: 13px; font-weight: 500;
+    letter-spacing: .03em; padding: 8px 24px;
+  }
+
+  .site-footer { border-top: 1px solid var(--ep-clay); margin-top: 24px; }
+  .site-footer .inner {
+    max-width: 800px; margin: 0 auto; padding: 24px;
+    font-size: 13px; color: var(--ep-gray);
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+
+  @media (max-width: 640px) {
+    h1 { font-size: 30px; }
+    h2 { font-size: 23px; }
+    body { font-size: 16px; }
+  }
+
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .site-header { position: static; }
+    .disclaimer-banner { background: #fff; border-bottom: 1px solid #000; }
+    .northstar { background: #fff; color: var(--ep-ink); border: 2px solid var(--ep-ink); }
+    .northstar .label { color: var(--ep-terracotta); }
+    .stage, .math, blockquote, table { background: #fff; }
+    td.ep { background: #fff7f2; }
+    th.ep { background: #fff7f2; color: var(--ep-ink); }
+    h2 { break-after: avoid; }
+    .stage, .risk, .table-wrap { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="disclaimer-banner">For presentation purposes only — not an official company document</div>
+
+<header class="site-header">
+  <div class="inner">
+    <img class="logo" src="https://s21.q4cdn.com/687136699/files/design/purestorage_logo_new.svg" alt="Everpure">
+    <span class="crumb">Strategy &nbsp;/&nbsp; Enterprise AI &amp; Analytics</span>
+  </div>
+</header>
+
+<div class="hero">
+  <p class="eyebrow">Strategy Memo</p>
+  <h1>Enterprise Context for AI Agent Decisions</h1>
+  <p class="meta">July 2026</p>
+  <hr class="rule">
+</div>
+
+<article>
+
+<h2>Recommendation</h2>
+
+<p>Everpure should build the enterprise data-context infrastructure that makes AI runtime authorization more data-aware, explainable, and defensible. The core bet is to operationalize Everpure Data Intelligence at the moment of action, turning its context graph from a discovery and governance asset into a low-latency recommendation and evidence service for external enforcement platforms.</p>
+
+<p>Everpure would provide policy-ready context, explainable recommendations, and cryptographically verifiable decision records to existing identity, authorization, and runtime platforms who retain final policy and enforcement authority. The initial use case is high-blast-radius actions involving Everpure-managed data, followed by sensitive-data movement once the first use case is validated.</p>
+
+<p>This is a platform bet with compounding value. Each connector makes the enterprise context graph more complete, each runtime integration expands its reach, and each production deployment reveals which signals improve decisions. Everpure gains a differentiated position in the agent-governance stack without becoming an identity provider, authorization engine, agent runtime, or general-purpose AI-security platform.</p>
+
+<p>The system is technically buildable, but it becomes a durable business only if Everpure provides differentiated context, enforcement platforms consume it in production, and customers fund it independent of other Pure offerings.</p>
+
+<h2>1. Market and Customer</h2>
+
+<p>As enterprise AI moves from supervised copilots to autonomous execution, model capability alone becomes a less durable source of differentiation. The critical control point shifts toward the context governing each action. Enterprises must authenticate the actor, determine its authority over the data involved, and evaluate the risk of the proposed action.</p>
+
+<p>Security and data governance are already constraining adoption. Nearly two-thirds of respondents to McKinsey&rsquo;s 2026 AI Trust survey identified security and risk as the primary barrier to fully scaling agentic AI <sup class="cite">[1]</sup>. A Gartner survey found that 40 percent of IT leaders delayed Microsoft 365 Copilot deployments by at least three months because of data-oversharing concerns <sup class="cite">[2]</sup>. IBM found that 13 percent of surveyed organizations had experienced breaches involving AI models or applications. Among that group, 97 percent lacked proper AI access controls <sup class="cite">[3]</sup>.</p>
+
+<p>The economic buyer is the CISO, VP of Data Security, or executive responsible for cyber resilience, with the Head of AI Platform as co-sponsor. Primary users include AI-platform security teams, authorization architects, data-governance teams, and data owners.</p>
+
+<blockquote>
+  <span class="q-label">Customer job</span>
+  &ldquo;Help me move autonomous AI from isolated pilots into core enterprise workflows by giving authorization systems the trusted data context needed to govern each action.&rdquo;
+</blockquote>
+
+<p>The ideal initial customer is a large, regulated or data-intensive enterprise that uses Everpure for business-critical data or recovery and is actively deploying agents with write, modification, or export permissions that faces material operational or regulatory consequences from an incorrect action. Financial services, healthcare, telecom, and the public sector are the strongest initial segments.</p>
+
+<h3>Market potential</h3>
+
+<p>The global AI trust, risk, and security management market is estimated at $3.4&nbsp;billion in 2026 and projected to reach $7.4&nbsp;billion by 2030 <sup class="cite">[5]</sup>. The adjacent data-security posture management market is estimated at $2.5&nbsp;billion in 2026 and projected to reach $6.2&nbsp;billion by 2033 <sup class="cite">[6]</sup>.</p>
+
+<p>Using AI trust, risk, and security management as the primary market, the category reaches approximately $6.1&nbsp;billion by 2029 at the reported growth rate. I assume 20 to 30 percent of spending will address runtime governance grounded in enterprise data context. This creates a serviceable market of approximately $1.2&nbsp;billion to $1.8&nbsp;billion.</p>
+
+<p>Capturing 5 to 8 percent of that market would represent approximately $60&nbsp;million to $145&nbsp;million in annual revenue:</p>
+
+<div class="math">
+  <div>$6.1 billion market <span class="op">×</span> 20 to 30 percent relevant share <span class="op">=</span> $1.2 billion to $1.8 billion serviceable market</div>
+  <div>$1.2 billion to $1.8 billion <span class="op">×</span> 5 to 8 percent Everpure share <span class="op">=</span> approximately $60 million to $145 million</div>
+</div>
+
+<p>The relevant-market and market-share percentages are assumptions to validate through design partners, pricing research, and partner demand.</p>
+
+<h2>2. Product and Initial Focus</h2>
+
+<p>The initial focus is high-blast-radius actions involving Everpure-managed data, including bulk deletion, overwrite, encryption, recovery-point changes, and other destructive operations exceeding a customer-defined threshold. This is where Everpure has the clearest structural advantage. For each proposed action, Everpure Agent Context provides classification, ownership, lineage, business criticality, affected workloads, estimated blast radius, recovery-point freshness, recoverability, and recommended constraints. The enforcement platform combines these signals with identity, delegation, and customer policy to make the final decision.</p>
+
+<p>The next expansion is sensitive-data movement, including transfers to unapproved applications, model endpoints, accounts, regions, or unmanaged environments. This broadens the opportunity but follows validation of the initial use case because Everpure has less direct recovery leverage.</p>
+
+<p>This bet is stronger than three credible alternatives:</p>
+
+<ul>
+  <li>Expanding AI data pipelines would address data readiness, but Everpure would compete directly with established compute, data-platform, and pipeline vendors, with differentiation concentrated largely in performance.</li>
+  <li>Building a semantic or query layer over open formats would compete with Snowflake, Databricks, and cloud platforms that already own the analytics workflow.</li>
+  <li>Building a proprietary agent gateway or general-purpose AI-security platform would enter a crowded category without a structural Everpure advantage and would turn potential identity, authorization, and runtime partners into competitors.</li>
+</ul>
+
+<p>The enterprise data-context layer is the stronger choice because it combines assets Everpure can uniquely bring together: cross-estate context, control of the underlying data layer, and storage-level recovery intelligence. It complements the analytics and enforcement platforms customers already use while establishing Everpure as the neutral context layer beneath them.</p>
+
+<p>Everpure should build the capabilities that depend on its proprietary data context and control of the underlying infrastructure, integrate where standard interfaces expand the reach of that context, and partner where another platform already owns execution, policy enforcement, compute, or the customer workflow.</p>
+
+<h2>3. Competitive Landscape and Right to Win</h2>
+
+<p>Customers would most seriously compare the proposed product with Microsoft&rsquo;s identity and governance stack, DSPM platforms such as Cyera or Varonis, and recovery-led offerings such as Rubrik Agent Rewind. Microsoft is stronger in identity, delegation, governance, and native enforcement across its own estate. Cyera and Varonis have established security buyers and mature data-discovery, exposure-management, and remediation workflows. Rubrik has a clearer agent-recovery narrative and an existing cyber-resilience buyer.</p>
+
+<p>Everpure&rsquo;s right to win lies in the combination of cross-enterprise data context, storage-level operational state and recovery intelligence. The classification engine acquired with 1touch.io reaches mainframe and legacy estates most DSPM tools do not, delivers &gt;98% classification accuracy in Tolly-verified testing, and was strong enough that IBM OEM&rsquo;d it as Guardium Discover and Classify. Everpure can connect data to owners, applications, business processes, downstream dependencies, policies, and recovery state across heterogeneous environments. Application-layer platforms generally lack storage-level information such as replication posture, recovery-point freshness, and expected recoverability. Data platforms provide deep context within their ecosystems but have less visibility and incentive across competing platforms and legacy estates.</p>
+
+<p>Open table formats strengthen this position. Iceberg and Delta atop Parquet allow multiple analytics and AI engines to operate on shared data without requiring each platform to own a separate copy <sup class="cite">[12]</sup>. Everpure does not need to replace the customer&rsquo;s preferred analytics engines. It can provide consistent context and recovery intelligence across them while the customer retains control of the underlying data.</p>
+
+<p>Exhibit&nbsp;A summarizes the competitive trade-offs.</p>
+
+<h2>4. Go to Market</h2>
+
+<p>The product launches as <strong>Everpure Agent Context</strong>, a standalone platform offering built on Everpure Data Intelligence. It includes the context service, recommendation API, decision records, enforcement integrations, and support for a defined set of protected workflows.</p>
+
+<p>Two or three paid design partners should each integrate one high-risk workflow with an agent runtime, MCP gateway, or authorization platform. Successful pilots become repeatable deployment patterns, reference architectures, customer proof points, and field enablement before distribution expands through platform partners.</p>
+
+<p>Pilots can attach to renewals or expansion events to simplify procurement, but the product remains separately priced. Independent security, AI-platform, or cyber-resilience budget is the test of whether this is a standalone business rather than a storage feature.</p>
+
+<p>The pilot customers come from the installed 14,500 strong base. The existing field opens doors and identifies qualified accounts, but specialist AI and data-security sellers own discovery, solution design, and the technical sale. Storage account executives receive quota credit for sourced and closed Agent Context revenue, while the specialist overlay carries a dedicated product target and partners with solution architects through deployment. This preserves the field&rsquo;s customer relationships without expecting storage sellers to create a new security and AI category on their own. Over time, repeatable qualification criteria, reference architectures, and packaged proof points can move more of the sale into the core field.</p>
+
+<p>Pricing should track the scope of risk governed, not storage capacity alone. The initial package combines an annual platform fee with tiers based on protected workflows or governed data domains. Decision volume serves as a secondary scaling dimension.</p>
+
+<h2>6. One-Year Execution Plan</h2>
+
+<div class="stage">
+  <h3>Phase 1: Validate <span class="months">Months 0 to 3</span></h3>
+  <p>Build an action-to-data resolver, shadow-mode recommendation service, decision records, one runtime integration, and five customer workflows.</p>
+  <p>Two design partners, one platform partner, five adjudicated workflows, evidence of material decision impact, and a viable security-review path.</p>
+</div>
+
+<div class="stage">
+  <h3>Phase 2: Paid pilot <span class="months">Months 4 to 6</span></h3>
+  <p>Add local context projections, freshness handling, production observability, the first active workflow, packaging, and pricing.</p>
+  <p>One paid pilot, at least 90 percent context coverage, decision-quality targets met, acceptable latency, and architecture approval.</p>
+</div>
+
+<div class="stage">
+  <h3>Phase 3: Production, <span class="months">Months 7 to 12</span></h3>
+  <p>Deliver production service levels, a second enforcement integration, repeatable deployment, field enablement, and initial sensitive-data-movement support.</p>
+  <p>Three paying customers, two production integrations, independent budget, and measurable decision-quality improvement.</p>
+</div>
+
+<p>The first three engineering priorities are:</p>
+
+<ol>
+  <li>Action-to-data resolution, to test whether Everpure can map an intercepted action to differentiated context.</li>
+  <li>One shadow-mode enforcement integration, to test whether a real platform will consume that context.</li>
+  <li>The evidence and measurement plane, to compare baseline decisions with context-enriched recommendations.</li>
+</ol>
+
+<p>These priorities test the three assumptions that matter most: Everpure can resolve the relevant context, partners will consume it, and that context improves decisions.</p>
+
+<p>Sensitive-data movement, warranty development, multiple integrations, generic policy authoring, and a proprietary gateway remain outside the initial critical path.</p>
+
+<h2>7. Metrics, Risk and Strategic Options</h2>
+
+<div class="northstar">
+  <span class="label">North-star metric</span>
+  <p>Monthly production high-risk agent actions governed using a unique Everpure context signal.</p>
+</div>
+
+<p>Guardrail metrics include:</p>
+
+<ul>
+  <li>Severity-weighted false-allow rate</li>
+  <li>False-deny and human-escalation rates</li>
+  <li>Context coverage and freshness</li>
+  <li>Recommendation override rate</li>
+  <li>p95 latency and availability</li>
+</ul>
+
+<p>Each design partner helps curate an adjudicated corpus of historical, synthetic, and adversarial actions. The same actions are evaluated using a baseline policy and a context-enriched policy.</p>
+
+<p>Initial success thresholds are:</p>
+
+<ul>
+  <li>At least a 30 percent reduction in severity-weighted false allows</li>
+  <li>At least 90 percent context coverage</li>
+  <li>Fewer than 5 percent stale or unresolved context cases</li>
+</ul>
+
+<p>The bet would be proven wrong within two quarters if no paid pilot exists, fewer than two enforcement platforms will consume attributes beyond basic classifications, or enriched context does not materially improve decisions. If these thresholds are not met, the product narrows to context feeds, governance evidence, and storage-native controls rather than expanding into runtime recommendations. This leads us to the key risks.</p>
+
+<div class="risk">
+  <h3><span class="n">1.</span>Enforcement platforms do not consume external context</h3>
+  <p>This can be mitigated by Integrating in shadow mode before scaling, use policy-ready open schemas, and preserve partner enforcement authority with a fallback to shift from runtime recommendations to precomputed context feeds, policy-authoring support, and governance evidence.</p>
+</div>
+
+<div class="risk">
+  <h3><span class="n">2.</span>Everpure context is incomplete, stale, or substitutable</h3>
+  <p>Measure coverage, freshness, unique-signal contribution, and decision lift before committing. .Fallback to focus on storage-native protection and recovery controls where Everpure&rsquo;s differentiation is strongest.</p>
+</div>
+
+<div class="risk">
+  <h3><span class="n">3.</span>GTM and integration complexity prevent adoption</h3>
+  <p>This can be preempted through specialist sellers, one separately priced package, a repeatable reference integration, and locally distributed context projections that avoid a synchronous cloud dependency with a fallback to package the capability as a differentiated Enterprise Data Cloud feature if customers value it only through storage budgets.</p>
+</div>
+
+<h2>Exhibit A: The Open Control Point in Agent Governance</h2>
+
+<p>Everpure&rsquo;s opportunity is to connect cross-enterprise data context with storage and recovery state at the moment of action and partner or integrate with the right players to deliver value.</p>
+
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Capability</th>
+      <th>Microsoft Entra + Purview</th>
+      <th>Cyera</th>
+      <th>Rubrik Agent Rewind</th>
+      <th class="ep">Everpure proposed position</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="cap">Agent identity and delegated authority</td>
+      <td>Strong</td>
+      <td>Limited</td>
+      <td>Limited</td>
+      <td class="ep">Partner-provided</td>
+    </tr>
+    <tr>
+      <td class="cap">Cross-estate data discovery and classification</td>
+      <td>Medium</td>
+      <td>Strong</td>
+      <td>Medium</td>
+      <td class="ep">Strong</td>
+    </tr>
+    <tr>
+      <td class="cap">Business context, ownership, and lineage</td>
+      <td>Strong within Microsoft</td>
+      <td>Strong</td>
+      <td>Limited</td>
+      <td class="ep">Strong across heterogeneous estates</td>
+    </tr>
+    <tr>
+      <td class="cap">Pre-action runtime recommendations</td>
+      <td>Strong within Microsoft</td>
+      <td>Emerging</td>
+      <td>Limited</td>
+      <td class="ep">Core product</td>
+    </tr>
+    <tr>
+      <td class="cap">Storage-level operational state</td>
+      <td>Limited</td>
+      <td>Limited</td>
+      <td>Strong</td>
+      <td class="ep">Core advantage</td>
+    </tr>
+    <tr>
+      <td class="cap">Recovery-point freshness and recoverability</td>
+      <td>Limited</td>
+      <td>Limited</td>
+      <td>Strong</td>
+      <td class="ep">Core advantage</td>
+    </tr>
+    <tr>
+      <td class="cap">Neutrality across runtimes and data platforms</td>
+      <td>Limited</td>
+      <td>Strong</td>
+      <td>Medium</td>
+      <td class="ep">Core position</td>
+    </tr>
+    <tr>
+      <td class="cap">Final enforcement authority</td>
+      <td>Owned</td>
+      <td>Integration-dependent</td>
+      <td>Integration-dependent</td>
+      <td class="ep">Deliberately partner-owned</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Sources</h2>
+
+<div class="sources">
+  <p><span class="n">[1]</span> McKinsey, State of AI Trust 2026.</p>
+  <p><span class="n">[2]</span> Gartner survey of 132 IT leaders, reported by Computerworld, November 2024.</p>
+  <p><span class="n">[3]</span> IBM, Cost of a Data Breach Report 2025.</p>
+  <p><span class="n">[4]</span> Everpure FY2026 Form 10-K.</p>
+  <p><span class="n">[5]</span> Grand View Research, AI Trust, Risk, and Security Management Market.</p>
+  <p><span class="n">[6]</span> Grand View Research, Data Security Posture Management Market.</p>
+  <p><span class="n">[7]</span> Everpure Data Intelligence public announcement and product materials.</p>
+  <p><span class="n">[8]</span> Everpure Enterprise Data Cloud public product materials.</p>
+  <p><span class="n">[9]</span> Microsoft Entra and Purview public product documentation.</p>
+  <p><span class="n">[10]</span> Cyera and Varonis public product documentation.</p>
+  <p><span class="n">[11]</span> Rubrik Agent Rewind public announcement.</p>
+  <p><span class="n">[12]</span> Apache Iceberg, Delta Lake, and Apache Parquet public documentation.</p>
+</div>
+
+</article>
+
+<footer class="site-footer">
+  <div class="inner">
+    <span>Strategy memo — prepared for discussion.</span>
+    <span>July 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>
